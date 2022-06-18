@@ -1,6 +1,7 @@
 package br.com.cesarschool.poo.repositorios;
 
 import br.com.cesarschool.poo.entidades.Conta;
+import br.com.cesarschool.poo.entidades.ContaPoupanca;
 
 /**
  * @author Anônimo
@@ -20,6 +21,20 @@ public class RepositorioConta {
 			return false;
 		} else if (tamanhoAtual == TAMANHO_MAX_CONTAS - 1) {
 			return false;
+		} else if (conta instanceof ContaPoupanca) {
+			ContaPoupanca contaPoupanca = (ContaPoupanca)conta;
+			if (contaPoupanca.getTotalDepositos() != 0)
+				return false;
+			else {
+				for (int i = 0; i < cadastroConta.length; i++) {
+					if (cadastroConta[i] == null) {
+						cadastroConta[i] = contaPoupanca;
+						break;
+					}
+				}
+				tamanhoAtual++; 
+				return true; 
+			}
 		} else {
 			for (int i = 0; i < cadastroConta.length; i++) {
 				if (cadastroConta[i] == null) {

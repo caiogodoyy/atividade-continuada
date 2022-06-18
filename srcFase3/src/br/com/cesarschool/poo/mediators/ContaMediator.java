@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import br.com.cesarschool.poo.entidades.Conta;
+import br.com.cesarschool.poo.entidades.ContaPoupanca;
+import br.com.cesarschool.poo.entidades.Correntista;
 import br.com.cesarschool.poo.entidades.StatusConta;
 import br.com.cesarschool.poo.repositorios.RepositorioConta;
 
@@ -28,6 +30,8 @@ public class ContaMediator {
 	private static final String MSG_VALOR_DEBITO_INVALIDO = "Valor de dédito inválido";
 	private static final String MSG_CONTA_NAO_INCLUIDA = "Conta já cadastrada ou repositório cheio";
 	private static final String MSG_CONTA_NAO_ENCONTRADA = "Conta não cadastrada";
+	private static final String MSG_CORRENTISTA_NAO_ENCONTRADO = "Correntista não cadastrado";
+	private static final String MSG_TAXA_JUROS_MENOR_IGUAL_A_ZERO = "Taxa de Juros da conta negativo ou zero";
 	private static final int TRINTA_DIAS = 30;
 	private static final int LIMITE_BRONZE = 5800;
 	private static final int LIMITE_PRATA = 13000;
@@ -35,6 +39,7 @@ public class ContaMediator {
 	private static final int ZERO = 0;
 	
 	private RepositorioConta repositorio = new RepositorioConta();
+	private CorrentistaMediator correntistaMediator = new CorrentistaMediator();
 	
 	public StatusValidacaoConta incluir(Conta conta) {
 		StatusValidacaoConta status = validar(conta);
@@ -44,6 +49,9 @@ public class ContaMediator {
 				status.getCodigosErros()[0] = StatusValidacaoConta.CONTA_NAO_INCLUIDA;
 				status.getMensagens()[0] = MSG_CONTA_NAO_INCLUIDA;
 				status.setValido(false);
+			}
+			else {
+				status = correntistaMediator.incluir(conta.getCorrentista());
 			}
 		}
 		return status;
@@ -56,6 +64,9 @@ public class ContaMediator {
 				status.getCodigosErros()[0] = StatusValidacaoConta.CONTA_NAO_ENCONTRADA;
 				status.getMensagens()[0] = MSG_CONTA_NAO_ENCONTRADA;
 				status.setValido(false);
+			}
+			else {
+				status = correntistaMediator.alterar(conta.getCorrentista());
 			}
 		}
 		return status;
@@ -85,8 +96,17 @@ public class ContaMediator {
 		}
 		StatusValidacaoConta statusVal = new StatusValidacaoConta(codigoStatus, mensagensStatus, contErros == ZERO);	
 		if (statusVal.isValido()) {
-			conta.creditar(valor);
-			repositorio.alterar(conta);
+			if (conta instanceof ContaPoupanca) {
+				ContaPoupanca contaPoupanca = (ContaPoupanca)conta;
+				valor = (1 + contaPoupanca.getTaxaJuros() / 100) * valor;
+				contaPoupanca.setTotalDepositos(contaPoupanca.getTotalDepositos()+1);
+				contaPoupanca.creditar(valor);
+				repositorio.alterar(contaPoupanca);
+			}
+			else {
+				conta.creditar(valor);
+				repositorio.alterar(conta);
+			}
 		}
 		return statusVal;
 	}
@@ -198,6 +218,22 @@ public class ContaMediator {
 			if (dataAberturaMenorDataAtualUmMes(conta.getDataAbertura())) {
 				codigoStatus[contErros++] = StatusValidacaoConta.DATA_ABERTURA_MENOR_UM_MES;
 				mensagensStatus[contErros] = MSG_DATA_ABERTURA_MENOR_UM_MES;												
+			}
+			if (conta.getCorrentista() != null) {
+				Correntista correntista = correntistaMediator.buscar(conta.getCorrentista().getCpf());
+				if (correntista == null) {
+					codigoStatus[contErros++] = StatusValidacaoConta.CORRENTISTA_NAO_ENCONTRADO;
+					mensagensStatus[contErros] = MSG_CORRENTISTA_NAO_ENCONTRADO;																	
+				} else {
+					conta.setCorrentista(correntista);
+				}
+			}
+			if (conta instanceof ContaPoupanca) {
+				ContaPoupanca contaPoupanca = (ContaPoupanca)conta; 
+				if (contaPoupanca.getTaxaJuros() <= 0) {
+					codigoStatus[contErros++] = StatusValidacaoConta.TAXA_JUROS_MENOR_IGUAL_A_ZERO;
+					mensagensStatus[contErros] = MSG_TAXA_JUROS_MENOR_IGUAL_A_ZERO;																	
+				}
 			}
 		}		
 		return new StatusValidacaoConta(codigoStatus, mensagensStatus, contErros == ZERO);		

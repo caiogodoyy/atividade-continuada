@@ -7,11 +7,13 @@ public class Conta {
 	private LocalDate dataAbertura;
 	private double saldo;
 	private StatusConta status;
-	public Conta(long numero, LocalDate dataAbertura, double saldo, StatusConta status) {
+	private Correntista correntista;
+	public Conta(long numero, LocalDate dataAbertura, double saldo, StatusConta status, Correntista correntista) {
 		this.numero = numero;
 		this.dataAbertura = dataAbertura;
 		this.saldo = saldo;
 		this.status = status;
+		this.correntista = correntista;
 	}
 	public long getNumero() {
 		return numero;
@@ -36,6 +38,12 @@ public class Conta {
 	}
 	public void setStatus(StatusConta status) {
 		this.status = status;
+	}
+	public Correntista getCorrentista() {
+		return correntista;
+	}
+	public void setCorrentista(Correntista correntista) {
+		this.correntista = correntista;
 	}
 	public void debitar(double valor) {
 		saldo = saldo - valor;

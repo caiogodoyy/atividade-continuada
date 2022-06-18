@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import br.com.cesarschool.poo.entidades.Conta;
+import br.com.cesarschool.poo.entidades.ContaPoupanca;
+import br.com.cesarschool.poo.entidades.Correntista;
 import br.com.cesarschool.poo.entidades.StatusConta;
 import br.com.cesarschool.poo.mediators.ContaMediator;
 import br.com.cesarschool.poo.mediators.StatusValidacaoConta;
@@ -102,11 +104,14 @@ public class TelaConta {
 	
 	private void processaInclusao() {
 		Conta conta = capturaConta(NUMERO_DESCONHECIDO);
-		StatusValidacaoConta status = contaMediator.incluir(conta);
-		if (status.isValido()) { 
+		if (conta instanceof ContaPoupanca) {
+			((ContaPoupanca) conta).setTotalDepositos(0);
+		}
+		StatusValidacaoConta statusConta = contaMediator.incluir(conta);
+		if (statusConta.isValido()) { 
 			System.out.println("Conta incluída com sucesso!");
 		} else {
-			processaMensagensErroValidacao(status);			
+			processaMensagensErroValidacao(statusConta);			
 		}
 	}
 	
@@ -132,6 +137,12 @@ public class TelaConta {
 			System.out.println("Saldo: " + conta.getSaldo());
 			System.out.println("Data Abertura: " + conta.getDataAbertura());			
 			System.out.println("Status: " + conta.getStatus().getDescricao());
+			System.out.println("Nome do correntista: " + conta.getCorrentista().getNome());			
+			System.out.println("CPF do correntista: " + conta.getCorrentista().getCpf());
+			if (conta instanceof ContaPoupanca) {
+				System.out.println("Taxa de juros: " + ((ContaPoupanca) conta).getTaxaJuros());			
+				System.out.println("Total de depositos: " + ((ContaPoupanca) conta).getTotalDepositos());
+			}
 			return numero;
 		}
 	}
@@ -191,6 +202,7 @@ public class TelaConta {
 	}
 
 	private Conta capturaConta(long numeroDaAlteracao) {
+		Conta conta = null;
 		long numero;		
 		if (numeroDaAlteracao == NUMERO_DESCONHECIDO) {
 			System.out.print(DIGITE_O_NUMERO);
@@ -206,6 +218,20 @@ public class TelaConta {
 		System.out.print("Digite o status: ");
 		int statusInt = ENTRADA.nextInt();
 		StatusConta status = StatusConta.obterPorCodigo(statusInt);
-		return new Conta(numero, dataAbertura, saldo, status);
+		System.out.print("Digite o nome do correntista: ");
+		String nome = ENTRADA.next();
+		System.out.print("Digite o CPF do correntista: ");
+		String cpf = ENTRADA.next();
+		Correntista correntista = new Correntista(nome, cpf);
+		System.out.print("1-Conta\n2-Conta Poupança: ");
+		int op = ENTRADA.nextInt();
+		if(op == 1)
+			conta = new Conta(numero, dataAbertura, saldo, status, correntista);
+		else {
+			System.out.print("Digite a taxa de juros: ");
+			double taxaJuros = ENTRADA.nextDouble();
+			conta = new ContaPoupanca(numero, dataAbertura, saldo, status, correntista, taxaJuros);
+		}
+		return conta;
 	}
 }

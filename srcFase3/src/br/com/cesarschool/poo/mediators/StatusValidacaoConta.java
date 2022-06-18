@@ -17,7 +17,14 @@ public class StatusValidacaoConta {
 	public static final int VALOR_DEBITO_INVALIDO = 10;
 	public static final int CONTA_NAO_INCLUIDA = 11;
 	public static final int CONTA_NAO_ENCONTRADA = 12;
-	public static final int QTD_SITUACOES_EXCECAO = 12;
+	
+	public static final int CORRENTISTA_NAO_INFORMADO = 13;
+	public static final int CPF_INVALIDO = 14;
+	public static final int NOME_NAO_INFORMADO = 15;
+	public static final int CORRENTISTA_NAO_ENCONTRADO = 16;
+	public static final int CORRENTISTA_NAO_INCLUIDO = 17;
+	public static final int TAXA_JUROS_MENOR_IGUAL_A_ZERO = 18; 
+	public static final int QTD_SITUACOES_EXCECAO = 18;
 	
 	private int[] codigosErros;
 	private String[] mensagens;

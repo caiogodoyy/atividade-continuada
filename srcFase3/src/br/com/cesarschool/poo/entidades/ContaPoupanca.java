@@ -6,10 +6,10 @@ public class ContaPoupanca extends Conta{
 	private double taxaJuros;
 	private int totalDepositos;
 
-	public ContaPoupanca(long numero, LocalDate dataAbertura, double saldo, StatusConta status, double taxaJuros, int totalDepositos) {
-		super(numero, dataAbertura, saldo, status);
+	public ContaPoupanca(long numero, LocalDate dataAbertura, double saldo, StatusConta status, 
+			Correntista correntista, double taxaJuros) {
+		super(numero, dataAbertura, saldo, status, correntista);
 		this.taxaJuros = taxaJuros;
-		this.totalDepositos = totalDepositos;
 	}
 
 	public double getTaxaJuros() {

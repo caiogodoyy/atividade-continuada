@@ -14,24 +14,24 @@ public class CorrentistaMediator {
 	
 	private RepositorioCorrentista repositorio = new RepositorioCorrentista();
 	
-	public StatusValidacaoCorrentista incluir(Correntista correntista) {
-		StatusValidacaoCorrentista status = validar(correntista);
+	public StatusValidacaoConta incluir(Correntista correntista) {
+		StatusValidacaoConta status = validar(correntista);
 		if (status.isValido()) {
 			boolean retornoRepositorio = repositorio.incluir(correntista);
 			if (!retornoRepositorio) {
-				status.getCodigosErros()[0] = StatusValidacaoCorrentista.CORRENTISTA_NAO_INCLUIDO;
+				status.getCodigosErros()[0] = StatusValidacaoConta.CORRENTISTA_NAO_INCLUIDO;
 				status.getMensagens()[0] = MSG_CORRENTISTA_NAO_INCLUIDO;
 				status.setValido(false);
 			}
 		}
 		return status;
 	}
-	public StatusValidacaoCorrentista alterar(Correntista correntista) {
-		StatusValidacaoCorrentista status = validar(correntista);
+	public StatusValidacaoConta alterar(Correntista correntista) {
+		StatusValidacaoConta status = validar(correntista);
 		if (status.isValido()) {
 			boolean retornoRepositorio = repositorio.alterar(correntista);
 			if (!retornoRepositorio) {
-				status.getCodigosErros()[0] = StatusValidacaoCorrentista.CORRENTISTA_NAO_ENCONTRADO;
+				status.getCodigosErros()[0] = StatusValidacaoConta.CORRENTISTA_NAO_ENCONTRADO;
 				status.getMensagens()[0] = MSG_CORRENTISTA_NAO_ENCONTRADO;
 				status.setValido(false);
 			}
@@ -45,23 +45,23 @@ public class CorrentistaMediator {
 		return repositorio.buscar(cpf);
 	}
 	
-	private StatusValidacaoCorrentista validar(Correntista correntista) {
-		int[] codigoStatus = new int[StatusValidacaoCorrentista.QTD_SITUACOES_EXCECAO];
-		String[] mensagensStatus = new String[StatusValidacaoCorrentista.QTD_SITUACOES_EXCECAO];
+	private StatusValidacaoConta validar(Correntista correntista) {
+		int[] codigoStatus = new int[StatusValidacaoConta.QTD_SITUACOES_EXCECAO];
+		String[] mensagensStatus = new String[StatusValidacaoConta.QTD_SITUACOES_EXCECAO];
 		int contErros = 0;
 		if (correntista == null) {
-			codigoStatus[contErros++] = StatusValidacaoCorrentista.CORRENTISTA_NAO_INFORMADO;
+			codigoStatus[contErros++] = StatusValidacaoConta.CORRENTISTA_NAO_INFORMADO;
 			mensagensStatus[contErros] = MSG_CORRENTISTA_NAO_INFORMADO;			
 		} else {
 			if (StatusValidacaoCPF.isCPF(correntista.getCpf()) != true) {
-				codigoStatus[contErros++] = StatusValidacaoCorrentista.CPF_INVALIDO;
+				codigoStatus[contErros++] = StatusValidacaoConta.CPF_INVALIDO;
 				mensagensStatus[contErros] = MSG_CPF_INVALIDO;
 			} 
 			if (correntista.getNome() == null) {
-				codigoStatus[contErros++] = StatusValidacaoCorrentista.NOME_NAO_INFORMADO;
+				codigoStatus[contErros++] = StatusValidacaoConta.NOME_NAO_INFORMADO;
 				mensagensStatus[contErros] = MSG_NOME_NAO_INFORMADO;				
 			}			
 		}		
-		return new StatusValidacaoCorrentista(codigoStatus, mensagensStatus, contErros == ZERO);		
+		return new StatusValidacaoConta(codigoStatus, mensagensStatus, contErros == ZERO);		
 	}
 }
