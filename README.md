@@ -1,6 +1,7 @@
 # Atividade Continuada
 - CESAR School
 - Professor: Eduardo Calabria
+- Grupo: Caio Godoy, Felipe Leão, João Guilherme Lima, Pedro Guerra e Rafael Carvalho
 - Atividade continuada de Programação Orientada a Objetos durante o terceiro período de CC no CESAR School
 <br /><br />
 
